@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect }      // Get conversation context (last few messages)
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
       const context = messages.slice(-4).map(msg => 
         `${msg.type}: ${msg.content}`
       ).join('\n');
