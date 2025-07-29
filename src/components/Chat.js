@@ -48,23 +48,7 @@ const Chat = () => {
         `${msg.type}: ${msg.content}`
       ).join('\n');
 
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/smart-search`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          context: context
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      const data = await response.json();
+      const data = await api.smartSearch(userMessage, context);
 
       // Add Hungie's response with enhanced data
       const hungieMessage = {

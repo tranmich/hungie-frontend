@@ -2,8 +2,16 @@
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
+console.log('🚀 API Configuration:', {
+  API_BASE_URL,
+  environment: process.env.NODE_ENV,
+  allEnvVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+});
+
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  console.log('📡 API Call:', { url, method: options.method || 'GET' });
   
   const defaultOptions = {
     headers: {
@@ -23,13 +31,34 @@ export const apiCall = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, mergedOptions);
     
+    console.log('📡 API Response:', { 
+      url, 
+      status: response.status, 
+      statusText: response.statusText,
+      contentType: response.headers.get('content-type')
+    });
+    
     if (!response.ok) {
+      // Try to get error details
+      const errorText = await response.text();
+      console.error('❌ API Error Details:', { 
+        status: response.status, 
+        statusText: response.statusText,
+        responseText: errorText.substring(0, 200) + '...'
+      });
       throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      console.error('❌ Non-JSON Response:', textResponse.substring(0, 200) + '...');
+      throw new Error('Expected JSON response but got: ' + contentType);
     }
     
     return await response.json();
   } catch (error) {
-    console.error('API call error:', error);
+    console.error('💥 API call error:', error);
     throw error;
   }
 };

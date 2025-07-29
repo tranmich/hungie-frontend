@@ -6,12 +6,14 @@ import SearchResults from './pages/SearchResults';
 import RecipeDetail from './pages/RecipeDetail';
 import Categories from './pages/Categories';
 import Chat from './components/Chat';
+import Debug from './components/Debug';
 import './components/Header.css';
 
 function App() {
   return (
     <Router>
       <div className="hungie-app">
+        <Debug />
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
