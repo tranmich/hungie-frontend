@@ -1,10 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-      const context = messages.slice(-4).map(msg => 
-        `${msg.type}: ${msg.content}`
-      ).join('\n');
-
-      const data = await api.smartSearch(message, context);import { useNavigate } from 'react-router-dom';
 import RecipeCard from './RecipeCard';
 import { api } from '../utils/api';
 import './Chat.css';
