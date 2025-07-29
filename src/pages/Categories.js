@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../utils/api';
 import './Categories.css';
 
 const Categories = () => {
@@ -16,13 +17,7 @@ const Categories = () => {
     setError(null);
     
     try {
-      const response = await fetch('/api/categories');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-      
-      const data = await response.json();
+      const data = await api.getCategories();
       setCategories(data.data || []);
     } catch (err) {
       setError('Failed to load categories. Our kitchen might be a bit smoky! 🔥');

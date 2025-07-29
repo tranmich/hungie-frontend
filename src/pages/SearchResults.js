@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import RecipeCard from '../components/RecipeCard';
+import { api } from '../utils/api';
 import './SearchResults.css';
 
 const SearchResults = () => {
@@ -22,13 +23,7 @@ const SearchResults = () => {
     setError(null);
     
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
-      
-      if (!response.ok) {
-        throw new Error('Search failed');
-      }
-      
-      const data = await response.json();
+      const data = await api.searchRecipes(searchQuery);
       setResults(data.data || []);
     } catch (err) {
       setError('Oops! Something went wrong with your search. Try again?');
