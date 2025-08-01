@@ -1,11 +1,26 @@
 // API Configuration and Utilities
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// Environment-based API URL with production fallback
+const getApiUrl = () => {
+  // Always use Railway backend for now to ensure it works
+  return 'https://hungie-backend-production.up.railway.app';
+  
+  // TODO: Re-enable environment detection once local backend is set up
+  // if (process.env.NODE_ENV === 'production') {
+  //   return 'https://hungie-backend-production.up.railway.app';
+  // }
+  // return process.env.REACT_APP_API_URL || 'http://localhost:8000';
+};
 
-console.log('🚀 API Configuration:', {
+const API_BASE_URL = getApiUrl();
+
+console.log('🚀 API Configuration [UPDATED]:', {
   API_BASE_URL,
   environment: process.env.NODE_ENV,
-  allEnvVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+  production: process.env.NODE_ENV === 'production',
+  envVar: process.env.REACT_APP_API_URL,
+  finalUrl: API_BASE_URL,
+  timestamp: new Date().toISOString()
 });
 
 export const apiCall = async (endpoint, options = {}) => {
@@ -44,16 +59,22 @@ export const apiCall = async (endpoint, options = {}) => {
       console.error('❌ API Error Details:', { 
         status: response.status, 
         statusText: response.statusText,
-        responseText: errorText.substring(0, 200) + '...'
+        responseText: errorText.substring(0, 500),
+        url: url
       });
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      throw new Error(`API call failed: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
     }
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const textResponse = await response.text();
-      console.error('❌ Non-JSON Response:', textResponse.substring(0, 200) + '...');
-      throw new Error('Expected JSON response but got: ' + contentType);
+      console.error('❌ Non-JSON Response:', {
+        contentType,
+        url,
+        responseText: textResponse.substring(0, 500),
+        fullResponse: textResponse
+      });
+      throw new Error('Expected JSON response but got: ' + contentType + '. Response: ' + textResponse.substring(0, 100));
     }
     
     return await response.json();
